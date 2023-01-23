@@ -50,7 +50,12 @@ header strong {
   border-radius: 4px;
   box-shadow: 2px 2px 2px #ffffff;
 }
-
+.container {
+  display: grid;
+  align-items: center; /* align the items vertically */
+  justify-content: center; /* align the items horizontally */
+}
 .title {
   margin-bottom: 20px;
+  color: white;
 }
