@@ -29,7 +29,7 @@ header {
 }
 
 header h3 {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: bold;
   margin-bottom: 20px;
 }
@@ -58,4 +58,10 @@ header strong {
 .title {
   margin-bottom: 20px;
   color: white;
+}
+table, th, td {
+  border: 0px solid black;
+  border-collapse: collapse;
+  padding: 4px;
+  text-align: center;
 }
