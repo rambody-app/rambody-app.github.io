@@ -7,21 +7,23 @@
 <style>
 body {
   display: flex;
-  justify-content: center;
+  justify-content: left;
   align-items: center;
-  height: 100vh;
+  height: 11vh;
   background-color: #0000;
   font-family: 'Arial', sans-serif;
 }
 
 .circle-timer-container {
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: 100px; /* Adjusted to half size */
+  height: 100px; /* Adjusted to half size */
 }
 
 .timer-svg {
   transform: rotate(-90deg);
+  width: 100px; /* Adjusted to half size */
+  height: 100px; /* Adjusted to half size */
 }
 
 .timer-text {
@@ -31,7 +33,7 @@ body {
   top: 40%; /* Adjusted to be slightly above center */
   left: 0;
   transform: translateY(-50%);
-  font-size: 2em;
+  font-size: 1em; /* Adjusted font size */
   font-weight: bold;
   z-index: 10; /* Ensure text is above the button */
 }
@@ -41,8 +43,8 @@ body {
   top: 62%; /* Positioned below the timer text */
   left: 50%;
   transform: translateX(-50%);
-  width: 50px;
-  height: 50px;
+  width: 25px; /* Adjusted to half size */
+  height: 25px; /* Adjusted to half size */
   border-radius: 50%;
   background-color: white; /* Set button background to white */
   display: flex;
@@ -54,9 +56,8 @@ body {
 }
 
 .timer-button i {
-  color: #0874fc; /* Set icon color to black */
-  font-size: 24px; /* Adjust this value to increase or decrease the icon size */
-}
+  color: #0874fc; /* Set icon color */
+  font-size: 12px; /* Adjusted to half size */
 }
 
 .timer-button:focus {
@@ -66,15 +67,14 @@ body {
 .timer-button:hover {
   background-color: white; /* Keep button background white on hover */
 }
-
 </style>
 </head>
 <body>
 
 <div class="circle-timer-container">
-  <svg class="timer-svg" width="200" height="200">
-    <circle r="90" cx="100" cy="100" fill="transparent" stroke="#eee" stroke-width="10"/>
-    <circle r="90" cx="100" cy="100" fill="transparent" stroke="#0874fc" stroke-width="10" stroke-dasharray="565.48" stroke-dashoffset="565.48" id="timer-circle"/>
+  <svg class="timer-svg" width="100" height="100">
+    <circle r="45" cx="50" cy="50" fill="transparent" stroke="#eee" stroke-width="5"/> <!-- Adjusted radius and stroke-width -->
+    <circle r="45" cx="50" cy="50" fill="transparent" stroke="#0874fc" stroke-width="5" stroke-dasharray="282.74" stroke-dashoffset="282.74" id="timer-circle"/> <!-- Adjusted radius and stroke-width -->
   </svg>
   <div class="timer-text" id="timer-text">00:00</div>
   <button class="timer-button" id="timer-button"><i class="fas fa-play"></i></button>
@@ -87,7 +87,7 @@ let isTimerRunning = false;
 const timerText = document.getElementById("timer-text");
 const timerCircle = document.getElementById("timer-circle");
 const timerButton = document.getElementById("timer-button");
-const maxTime = 60; // 1 minute for reset
+const maxTime = 15 * 60; // 15 minutes in seconds
 
 function updateTimerDisplay(time) {
   const minutes = Math.floor(time / 60);
@@ -96,8 +96,8 @@ function updateTimerDisplay(time) {
 }
 
 function setCircleDasharray(time) {
-  const circleDasharray = (time / maxTime) * 565.48;
-  timerCircle.style.strokeDashoffset = 565.48 - circleDasharray;
+  const circleDasharray = (time / maxTime) * 282.74; // Adjusted value based on new radius
+  timerCircle.style.strokeDashoffset = 282.74 - circleDasharray; // Adjusted value based on new radius
 }
 
 timerButton.addEventListener("click", function() {
@@ -107,7 +107,7 @@ timerButton.addEventListener("click", function() {
     timerInterval = setInterval(() => {
       timePassed++;
       if (timePassed >= maxTime) {
-        timePassed = 0; // Ensure timer resets after one minute
+        timePassed = 0; // Ensure timer resets after reaching 15 minutes
       }
       updateTimerDisplay(timePassed);
       setCircleDasharray(timePassed);
