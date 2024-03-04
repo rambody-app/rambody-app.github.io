@@ -111,7 +111,7 @@ function setCircleDasharray(time) {
 timerButton.addEventListener("click", function() {
   if (!isTimerRunning) {
     isTimerRunning = true;
-    timerButton.innerHTML = '<i class="fas fa-sync-alt"></i>'; // Reset icon
+    timerButton.innerHTML = '<i class="fas fa-pause"></i>'; // Pause icon
     timerInterval = setInterval(() => {
       timePassed++;
       updateTimerDisplay(timePassed);
