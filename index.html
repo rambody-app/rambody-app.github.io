@@ -2,106 +2,92 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Circular Timer</title>
+<title>Beautiful Circle Timer</title>
 <style>
-  .circle-timer {
-    position: relative;
-    width: 150px;
-    height: 150px;
-    text-align: center;
-    border-radius: 50%;
-    background: white;
-    box-shadow: 0 0 10px #0003 inset, 0 0 5px #0a0a0a;
-  }
-  .circle-timer:after {
-    content: '';
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    bottom: 5px;
-    left: 5px;
-    border-radius: 50%;
-    background: #fff;
-    z-index: 100;
-  }
-  .timer-text {
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 150;
-    font-size: 24px;
-    font-weight: bold;
-  }
-  .progress-bar {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    border-radius: 50%;
-    clip: rect(0px, 150px, 150px, 75px);
-    background: none;
-    z-index: 50;
-  }
-  .progress-bar .fill {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    border-radius: 50%;
-    background: #3498db;
-    transform: rotate(0deg);
-    transform-origin: center bottom;
-    transition: transform 0.1s linear;
-  }
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f7f7f7;
+  font-family: 'Arial', sans-serif;
+}
+
+.circle-timer-container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.timer-svg {
+  transform: rotate(-90deg);
+}
+
+.timer-text {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  font-size: 2em;
+  font-weight: bold;
+}
+
 </style>
 </head>
 <body>
 
-<div class="circle-timer">
-  <div class="progress-bar" id="progress-bar">
-    <div class="fill" id="fill"></div>
-  </div>
-  <div class="timer-text" id="timer">00:00</div>
+<div class="circle-timer-container">
+  <svg class="timer-svg" width="200" height="200">
+    <circle r="90" cx="100" cy="100" fill="transparent" stroke="#eee" stroke-width="10"/>
+    <circle r="90" cx="100" cy="100" fill="transparent" stroke="#00bcd4" stroke-width="10" stroke-dasharray="565.48" stroke-dashoffset="565.48" id="timer-circle"/>
+  </svg>
+  <div class="timer-text" id="timer-text">01:00</div>
 </div>
 
 <script>
-var timerElement = document.getElementById('timer');
-var fillElement = document.getElementById('fill');
-var progressBarElement = document.getElementById('progress-bar');
-var totalSeconds = 60;
-var interval;
+const FULL_DASH_ARRAY = 565.48; // 2πr where r is the radius of the circle
+const TIME_LIMIT = 60; // Your time limit in seconds
 
-function updateTimer() {
-  var seconds = totalSeconds % 60;
-  var minutes = parseInt(totalSeconds / 60);
-  timerElement.textContent = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+let timePassed = 0;
+let timeLeft = TIME_LIMIT;
+let timerInterval = null;
 
-  // Calculate the fill rotation
-  var fillRotation = 360 - (totalSeconds / 60 * 360);
-  fillElement.style.transform = 'rotate(' + fillRotation + 'deg)';
+function formatTimeLeft(time) {
+  const minutes = Math.floor(time / 60);
+  const seconds = time % 60;
 
-  // When half of the time has passed, we need to add a class to the progress bar
-  if (totalSeconds <= 30) {
-    progressBarElement.classList.add('half');
-  }
-
-  if (totalSeconds <= 0) {
-    clearInterval(interval);
-  }
-
-  totalSeconds--;
+  return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 }
 
 function startTimer() {
-  interval = setInterval(updateTimer, 1000);
+  timerInterval = setInterval(() => {
+    timePassed += 1;
+    timeLeft = TIME_LIMIT - timePassed;
+
+    document.getElementById("timer-text").innerHTML = formatTimeLeft(timeLeft);
+    setCircleDasharray();
+
+    if (timeLeft === 0) {
+      onTimesUp();
+    }
+  }, 1000);
 }
 
-window.onload = function () {
-  startTimer();
+function setCircleDasharray() {
+  const circleDasharray = `${(
+    (timeLeft / TIME_LIMIT) * FULL_DASH_ARRAY
+  ).toFixed(0)} 565.48`;
+  document.getElementById("timer-circle").setAttribute("stroke-dasharray", circleDasharray);
 }
+
+function onTimesUp() {
+  clearInterval(timerInterval);
+}
+
+// Start the timer on load
+startTimer();
 </script>
 
 </body>
