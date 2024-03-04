@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Circle Timer with Start and Reset</title>
+<title>Circle Timer with Icon Button</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
 <style>
 body {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f7f7f7;
+  background-color: #0000;
   font-family: 'Arial', sans-serif;
 }
 
@@ -27,35 +28,43 @@ body {
   position: absolute;
   width: 100%;
   text-align: center;
-  top: 50%;
+  top: 40%; /* Adjusted to be slightly above center */
   left: 0;
   transform: translateY(-50%);
   font-size: 2em;
   font-weight: bold;
+  z-index: 10; /* Ensure text is above the button */
 }
 
-.button-container {
+.timer-button {
   position: absolute;
-  top: 120%;
+  top: 62%; /* Positioned below the timer text */
   left: 50%;
   transform: translateX(-50%);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: white; /* Set button background to white */
   display: flex;
-  gap: 10px; /* space between buttons */
-}
-
-.button {
-  padding: 10px 20px;
-  font-size: 1em;
-  color: #fff;
-  background-color: #00bcd4;
+  justify-content: center;
+  align-items: center;
   border: none;
-  border-radius: 5px;
   cursor: pointer;
   outline: none;
 }
 
-.button:hover {
-  background-color: #0097a7;
+.timer-button i {
+  color: #0874fc; /* Set icon color to black */
+  font-size: 24px; /* Adjust this value to increase or decrease the icon size */
+}
+}
+
+.timer-button:focus {
+  outline: none;
+}
+
+.timer-button:hover {
+  background-color: white; /* Keep button background white on hover */
 }
 
 </style>
@@ -65,51 +74,53 @@ body {
 <div class="circle-timer-container">
   <svg class="timer-svg" width="200" height="200">
     <circle r="90" cx="100" cy="100" fill="transparent" stroke="#eee" stroke-width="10"/>
-    <circle r="90" cx="100" cy="100" fill="transparent" stroke="#00bcd4" stroke-width="10" stroke-dasharray="565.48" stroke-dashoffset="0" id="timer-circle"/>
+    <circle r="90" cx="100" cy="100" fill="transparent" stroke="#0874fc" stroke-width="10" stroke-dasharray="565.48" stroke-dashoffset="565.48" id="timer-circle"/>
   </svg>
   <div class="timer-text" id="timer-text">00:00</div>
-  <div class="button-container">
-    <button class="button" id="start-button">Start</button>
-    <button class="button" id="reset-button">Reset</button>
-  </div>
+  <button class="timer-button" id="timer-button"><i class="fas fa-play"></i></button>
 </div>
 
 <script>
+let timePassed = 0;
 let timerInterval = null;
-
-function startTimer() {
-  clearInterval(timerInterval);
-  let timePassed = 0;
-  timerInterval = setInterval(() => {
-    timePassed++;
-    updateTimerDisplay(timePassed);
-    setCircleDasharray(timePassed);
-
-    if (timePassed >= 60) {
-      clearInterval(timerInterval);
-    }
-  }, 1000);
-}
-
-function resetTimer() {
-  clearInterval(timerInterval);
-  updateTimerDisplay(0);
-  setCircleDasharray(0);
-}
+let isTimerRunning = false;
+const timerText = document.getElementById("timer-text");
+const timerCircle = document.getElementById("timer-circle");
+const timerButton = document.getElementById("timer-button");
+const maxTime = 60; // 1 minute for reset
 
 function updateTimerDisplay(time) {
   const minutes = Math.floor(time / 60);
   const seconds = time % 60;
-  document.getElementById("timer-text").textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  timerText.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 }
 
 function setCircleDasharray(time) {
-  const circleDasharray = (time / 60) * 565.48;
-  document.getElementById("timer-circle").style.strokeDasharray = `${circleDasharray} 565.48`;
+  const circleDasharray = (time / maxTime) * 565.48;
+  timerCircle.style.strokeDashoffset = 565.48 - circleDasharray;
 }
 
-document.getElementById("start-button").addEventListener("click", startTimer);
-document.getElementById("reset-button").addEventListener("click", resetTimer);
+timerButton.addEventListener("click", function() {
+  if (!isTimerRunning) {
+    isTimerRunning = true;
+    timerButton.innerHTML = '<i class="fas fa-sync-alt"></i>'; // Reset icon
+    timerInterval = setInterval(() => {
+      timePassed++;
+      if (timePassed >= maxTime) {
+        timePassed = 0; // Ensure timer resets after one minute
+      }
+      updateTimerDisplay(timePassed);
+      setCircleDasharray(timePassed);
+    }, 1000);
+  } else {
+    clearInterval(timerInterval);
+    isTimerRunning = false;
+    timePassed = 0;
+    updateTimerDisplay(timePassed);
+    setCircleDasharray(timePassed);
+    timerButton.innerHTML = '<i class="fas fa-play"></i>'; // Start icon
+  }
+});
 </script>
 
 </body>
