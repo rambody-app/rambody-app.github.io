@@ -33,7 +33,7 @@ body {
   top: 40%; /* Adjusted to be slightly above center */
   left: 0;
   transform: translateY(-50%);
-  font-size: 1em; /* Adjusted font size */
+  font-size: 1.4em; /* Adjusted font size */
   font-weight: bold;
   z-index: 10; /* Ensure text is above the button */
 }
@@ -88,6 +88,7 @@ const timerText = document.getElementById("timer-text");
 const timerCircle = document.getElementById("timer-circle");
 const timerButton = document.getElementById("timer-button");
 const maxTime = 15 * 60; // 15 minutes in seconds
+const oneMinute = 60; // 1 minute in seconds
 
 function updateTimerDisplay(time) {
   const minutes = Math.floor(time / 60);
@@ -96,7 +97,14 @@ function updateTimerDisplay(time) {
 }
 
 function setCircleDasharray(time) {
-  const circleDasharray = (time / maxTime) * 282.74; // Adjusted value based on new radius
+  let circleDasharray;
+  if (time < oneMinute) {
+    // If less than 1 minute has passed, use the original dash array
+    circleDasharray = (time / oneMinute) * 282.74; // Adjusted value based on new radius
+  } else {
+    // If more than 1 minute has passed, reset the dash array
+    circleDasharray = (time - oneMinute) / (maxTime - oneMinute) * 282.74; // Adjusted value based on new radius
+  }
   timerCircle.style.strokeDashoffset = 282.74 - circleDasharray; // Adjusted value based on new radius
 }
 
@@ -106,18 +114,12 @@ timerButton.addEventListener("click", function() {
     timerButton.innerHTML = '<i class="fas fa-sync-alt"></i>'; // Reset icon
     timerInterval = setInterval(() => {
       timePassed++;
-      if (timePassed >= maxTime) {
-        timePassed = 0; // Ensure timer resets after reaching 15 minutes
-      }
       updateTimerDisplay(timePassed);
       setCircleDasharray(timePassed);
     }, 1000);
   } else {
     clearInterval(timerInterval);
     isTimerRunning = false;
-    timePassed = 0;
-    updateTimerDisplay(timePassed);
-    setCircleDasharray(timePassed);
     timerButton.innerHTML = '<i class="fas fa-play"></i>'; // Start icon
   }
 });
