@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Beautiful Circle Timer</title>
+<title>Circle Timer with Start and Reset</title>
 <style>
 body {
   display: flex;
@@ -34,6 +34,30 @@ body {
   font-weight: bold;
 }
 
+.button-container {
+  position: absolute;
+  top: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px; /* space between buttons */
+}
+
+.button {
+  padding: 10px 20px;
+  font-size: 1em;
+  color: #fff;
+  background-color: #00bcd4;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+}
+
+.button:hover {
+  background-color: #0097a7;
+}
+
 </style>
 </head>
 <body>
@@ -41,53 +65,51 @@ body {
 <div class="circle-timer-container">
   <svg class="timer-svg" width="200" height="200">
     <circle r="90" cx="100" cy="100" fill="transparent" stroke="#eee" stroke-width="10"/>
-    <circle r="90" cx="100" cy="100" fill="transparent" stroke="#00bcd4" stroke-width="10" stroke-dasharray="565.48" stroke-dashoffset="565.48" id="timer-circle"/>
+    <circle r="90" cx="100" cy="100" fill="transparent" stroke="#00bcd4" stroke-width="10" stroke-dasharray="565.48" stroke-dashoffset="0" id="timer-circle"/>
   </svg>
-  <div class="timer-text" id="timer-text">01:00</div>
+  <div class="timer-text" id="timer-text">00:00</div>
+  <div class="button-container">
+    <button class="button" id="start-button">Start</button>
+    <button class="button" id="reset-button">Reset</button>
+  </div>
 </div>
 
 <script>
-const FULL_DASH_ARRAY = 565.48; // 2πr where r is the radius of the circle
-const TIME_LIMIT = 60; // Your time limit in seconds
-
-let timePassed = 0;
-let timeLeft = TIME_LIMIT;
 let timerInterval = null;
 
-function formatTimeLeft(time) {
-  const minutes = Math.floor(time / 60);
-  const seconds = time % 60;
-
-  return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-}
-
 function startTimer() {
+  clearInterval(timerInterval);
+  let timePassed = 0;
   timerInterval = setInterval(() => {
-    timePassed += 1;
-    timeLeft = TIME_LIMIT - timePassed;
+    timePassed++;
+    updateTimerDisplay(timePassed);
+    setCircleDasharray(timePassed);
 
-    document.getElementById("timer-text").innerHTML = formatTimeLeft(timeLeft);
-    setCircleDasharray();
-
-    if (timeLeft === 0) {
-      onTimesUp();
+    if (timePassed >= 60) {
+      clearInterval(timerInterval);
     }
   }, 1000);
 }
 
-function setCircleDasharray() {
-  const circleDasharray = `${(
-    (timeLeft / TIME_LIMIT) * FULL_DASH_ARRAY
-  ).toFixed(0)} 565.48`;
-  document.getElementById("timer-circle").setAttribute("stroke-dasharray", circleDasharray);
-}
-
-function onTimesUp() {
+function resetTimer() {
   clearInterval(timerInterval);
+  updateTimerDisplay(0);
+  setCircleDasharray(0);
 }
 
-// Start the timer on load
-startTimer();
+function updateTimerDisplay(time) {
+  const minutes = Math.floor(time / 60);
+  const seconds = time % 60;
+  document.getElementById("timer-text").textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+}
+
+function setCircleDasharray(time) {
+  const circleDasharray = (time / 60) * 565.48;
+  document.getElementById("timer-circle").style.strokeDasharray = `${circleDasharray} 565.48`;
+}
+
+document.getElementById("start-button").addEventListener("click", startTimer);
+document.getElementById("reset-button").addEventListener("click", resetTimer);
 </script>
 
 </body>
