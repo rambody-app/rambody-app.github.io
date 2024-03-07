@@ -2,21 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Adaptive Countdown Timer</title>
+<title>Simple 60-Second Countdown Timer</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
 <style>
 body {
   display: flex;
-  justify-content: left;
-  align-items: left;
+  justify-content: center;
+  align-items: center;
   height: 100vh;
   background-color: #f0f0f0;
   font-family: 'Arial', sans-serif;
 }
 .circle-timer-container {
   position: relative;
-  width: 150px; /* Size adjusted for better visibility */
-  height: 150px; /* Size adjusted for better visibility */
+  width: 150px;
+  height: 150px;
 }
 .timer-svg {
   transform: rotate(-90deg);
@@ -63,7 +63,7 @@ body {
     <circle r="65" cx="75" cy="75" fill="transparent" stroke="#eee" stroke-width="5"/>
     <circle r="65" cx="75" cy="75" fill="transparent" stroke="#0874fc" stroke-width="5" stroke-dasharray="408.4" stroke-dashoffset="408.4" id="timer-circle"/>
   </svg>
-  <div class="timer-text" id="timer-text">Start</div>
+  <div class="timer-text" id="timer-text">60</div>
   <button class="timer-button" id="timer-button"><i class="fas fa-play"></i></button>
 </div>
 
@@ -71,68 +71,46 @@ body {
 const timerText = document.getElementById("timer-text");
 const timerCircle = document.getElementById("timer-circle");
 const timerButton = document.getElementById("timer-button");
-let prepInterval, mainInterval;
+let countdownInterval;
 
-function initializeTimer() {
-  clearInterval(prepInterval);
-  clearInterval(mainInterval);
+function resetTimer() {
+  clearInterval(countdownInterval);
   timerCircle.style.strokeDashoffset = "408.4";
-  timerText.textContent = "Start";
+  timerText.textContent = "60";
   timerButton.innerHTML = '<i class="fas fa-play"></i>'; // Start with play icon
 }
 
-function startPrepTimer() {
-  let prepTime = 5; // Preparation time in seconds
-  let countdown = prepTime;
-  let totalDashArray = 408.4; // The total length of the circle's stroke
-  let dashOffset = totalDashArray;
-  let step = totalDashArray / prepTime;
-  timerCircle.style.strokeDashoffset = dashOffset.toString();
-  timerButton.innerHTML = '<i class="fas fa-redo"></i>'; // Change to reset icon after start
+function startTimer() {
+  let timeLeft = 60; // Timer for 60 seconds
+  timerCircle.style.strokeDasharray = "408.4";
+  let dashOffset = 408.4;
+  let step = dashOffset / timeLeft;
 
-  prepInterval = setInterval(() => {
-    countdown--;
+  countdownInterval = setInterval(() => {
+    timeLeft--;
     dashOffset -= step;
     timerCircle.style.strokeDashoffset = dashOffset.toString();
+    timerText.textContent = timeLeft;
 
-    if (countdown <= 0) {
-      clearInterval(prepInterval);
-      startMainTimer();
-    }
-  }, 1000);
-}
-
-function startMainTimer() {
-  let mainTime = 15; // Main timer in seconds
-  timerText.textContent = mainTime;
-  let totalDashArray = 408.4; // Reset for the main countdown
-  let dashOffset = totalDashArray;
-  timerCircle.style.strokeDashoffset = dashOffset.toString();
-  let step = totalDashArray / mainTime;
-
-  mainInterval = setInterval(() => {
-    mainTime--;
-    timerText.textContent = mainTime;
-    dashOffset -= step;
-    timerCircle.style.strokeDashoffset = dashOffset.toString();
-
-    if (mainTime <= 0) {
-      clearInterval(mainInterval);
+    if (timeLeft <= 0) {
+      clearInterval(countdownInterval);
       timerText.textContent = "Done!";
-      // Keep the reset button for restart
+      timerButton.innerHTML = '<i class="fas fa-redo"></i>'; // Change to reset icon for restart
     }
   }, 1000);
 }
 
 timerButton.addEventListener("click", function() {
   if (timerButton.innerHTML.includes('play')) {
-    startPrepTimer(); // Start the preparation countdown
+    startTimer(); // Start the timer
+    timerButton.innerHTML = '<i class="fas fa-redo"></i>'; // Immediately switch to reset icon
   } else {
-    initializeTimer(); // Resets and initializes timer
+    resetTimer(); // Resets and initializes timer for a new start
   }
 });
 
-initializeTimer(); // Initialize timer on load
+resetTimer(); // Initialize timer on load to set everything to start state
 </script>
 
 </body>
+</html>
