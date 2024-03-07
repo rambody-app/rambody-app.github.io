@@ -2,51 +2,47 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Circle Timer with Icon Button</title>
+<title>Adaptive Countdown Timer</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
 <style>
 body {
   display: flex;
   justify-content: left;
-  align-items: center;
-  height: 16vh;
-  background-color: #0000;
+  align-items: left;
+  height: 100vh;
+  background-color: #f0f0f0;
   font-family: 'Arial', sans-serif;
 }
-
 .circle-timer-container {
   position: relative;
-  width: 100px; /* Adjusted to half size */
-  height: 100px; /* Adjusted to half size */
+  width: 150px; /* Size adjusted for better visibility */
+  height: 150px; /* Size adjusted for better visibility */
 }
-
 .timer-svg {
   transform: rotate(-90deg);
-  width: 100px; /* Adjusted to half size */
-  height: 100px; /* Adjusted to half size */
+  width: 150px;
+  height: 150px;
 }
-
 .timer-text {
   position: absolute;
   width: 100%;
   text-align: center;
-  top: 40%; /* Adjusted to be slightly above center */
+  top: 40%;
   left: 0;
   transform: translateY(-50%);
-  font-size: 1.4em; /* Adjusted font size */
+  font-size: 1.6em;
   font-weight: bold;
-  z-index: 10; /* Ensure text is above the button */
+  z-index: 10;
 }
-
 .timer-button {
   position: absolute;
-  top: 62%; /* Positioned below the timer text */
+  top: 68%;
   left: 50%;
   transform: translateX(-50%);
-  width: 25px; /* Adjusted to half size */
-  height: 25px; /* Adjusted to half size */
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background-color: white; /* Set button background to white */
+  background-color: white;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -54,76 +50,89 @@ body {
   cursor: pointer;
   outline: none;
 }
-
 .timer-button i {
-  color: #0874fc; /* Set icon color */
-  font-size: 12px; /* Adjusted to half size */
-}
-
-.timer-button:focus {
-  outline: none;
-}
-
-.timer-button:hover {
-  background-color: white; /* Keep button background white on hover */
+  color: #0874fc;
+  font-size: 14px;
 }
 </style>
 </head>
 <body>
 
 <div class="circle-timer-container">
-  <svg class="timer-svg" width="100" height="100">
-    <circle r="45" cx="50" cy="50" fill="transparent" stroke="#eee" stroke-width="5"/> <!-- Adjusted radius and stroke-width -->
-    <circle r="45" cx="50" cy="50" fill="transparent" stroke="#0874fc" stroke-width="5" stroke-dasharray="282.74" stroke-dashoffset="282.74" id="timer-circle"/> <!-- Adjusted radius and stroke-width -->
+  <svg class="timer-svg">
+    <circle r="65" cx="75" cy="75" fill="transparent" stroke="#eee" stroke-width="5"/>
+    <circle r="65" cx="75" cy="75" fill="transparent" stroke="#0874fc" stroke-width="5" stroke-dasharray="408.4" stroke-dashoffset="408.4" id="timer-circle"/>
   </svg>
-  <div class="timer-text" id="timer-text">00:00</div>
+  <div class="timer-text" id="timer-text">Start</div>
   <button class="timer-button" id="timer-button"><i class="fas fa-play"></i></button>
 </div>
 
 <script>
-let timePassed = 0;
-let timerInterval = null;
-let isTimerRunning = false;
 const timerText = document.getElementById("timer-text");
 const timerCircle = document.getElementById("timer-circle");
 const timerButton = document.getElementById("timer-button");
-const maxTime = 15 * 60; // 15 minutes in seconds
-const oneMinute = 60; // 1 minute in seconds
+let prepInterval, mainInterval;
 
-function updateTimerDisplay(time) {
-  const minutes = Math.floor(time / 60);
-  const seconds = time % 60;
-  timerText.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+function initializeTimer() {
+  clearInterval(prepInterval);
+  clearInterval(mainInterval);
+  timerCircle.style.strokeDashoffset = "408.4";
+  timerText.textContent = "Start";
+  timerButton.innerHTML = '<i class="fas fa-play"></i>'; // Start with play icon
 }
 
-function setCircleDasharray(time) {
-  let circleDasharray;
-  if (time < oneMinute) {
-    // If less than 1 minute has passed, use the original dash array
-    circleDasharray = (time / oneMinute) * 282.74; // Adjusted value based on new radius
-  } else {
-    // If more than 1 minute has passed, reset the dash array
-    circleDasharray = (time - oneMinute) / (maxTime - oneMinute) * 282.74; // Adjusted value based on new radius
-  }
-  timerCircle.style.strokeDashoffset = 282.74 - circleDasharray; // Adjusted value based on new radius
+function startPrepTimer() {
+  let prepTime = 5; // Preparation time in seconds
+  let countdown = prepTime;
+  let totalDashArray = 408.4; // The total length of the circle's stroke
+  let dashOffset = totalDashArray;
+  let step = totalDashArray / prepTime;
+  timerCircle.style.strokeDashoffset = dashOffset.toString();
+  timerButton.innerHTML = '<i class="fas fa-redo"></i>'; // Change to reset icon after start
+
+  prepInterval = setInterval(() => {
+    countdown--;
+    dashOffset -= step;
+    timerCircle.style.strokeDashoffset = dashOffset.toString();
+
+    if (countdown <= 0) {
+      clearInterval(prepInterval);
+      startMainTimer();
+    }
+  }, 1000);
+}
+
+function startMainTimer() {
+  let mainTime = 15; // Main timer in seconds
+  timerText.textContent = mainTime;
+  let totalDashArray = 408.4; // Reset for the main countdown
+  let dashOffset = totalDashArray;
+  timerCircle.style.strokeDashoffset = dashOffset.toString();
+  let step = totalDashArray / mainTime;
+
+  mainInterval = setInterval(() => {
+    mainTime--;
+    timerText.textContent = mainTime;
+    dashOffset -= step;
+    timerCircle.style.strokeDashoffset = dashOffset.toString();
+
+    if (mainTime <= 0) {
+      clearInterval(mainInterval);
+      timerText.textContent = "Done!";
+      // Keep the reset button for restart
+    }
+  }, 1000);
 }
 
 timerButton.addEventListener("click", function() {
-  if (!isTimerRunning) {
-    isTimerRunning = true;
-    timerButton.innerHTML = '<i class="fas fa-pause"></i>'; // Pause icon
-    timerInterval = setInterval(() => {
-      timePassed++;
-      updateTimerDisplay(timePassed);
-      setCircleDasharray(timePassed);
-    }, 1000);
+  if (timerButton.innerHTML.includes('play')) {
+    startPrepTimer(); // Start the preparation countdown
   } else {
-    clearInterval(timerInterval);
-    isTimerRunning = false;
-    timerButton.innerHTML = '<i class="fas fa-play"></i>'; // Start icon
+    initializeTimer(); // Resets and initializes timer
   }
 });
+
+initializeTimer(); // Initialize timer on load
 </script>
 
 </body>
-</html>
