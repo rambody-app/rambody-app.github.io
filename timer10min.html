@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Count Up Timer to 10 Minutes</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+<style>
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #0;
+  font-family: 'Arial', sans-serif;
+}
+.circle-timer-container {
+  position: relative;
+  width: 150px;
+  height: 150px;
+}
+.timer-svg {
+  transform: rotate(-90deg);
+  width: 150px;
+  height: 150px;
+}
+.timer-text {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: 40%;
+  left: 0;
+  transform: translateY(-50%);
+  font-size: 1.6em;
+  font-weight: bold;
+  z-index: 10;
+}
+.timer-button {
+  position: absolute;
+  top: 68%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+.timer-button i {
+  color: #0874fc;
+  font-size: 14px;
+}
+</style>
+</head>
+<body>
+
+<div class="circle-timer-container">
+  <svg class="timer-svg">
+    <circle r="65" cx="75" cy="75" fill="transparent" stroke="#eee" stroke-width="5"/>
+    <circle r="65" cx="75" cy="75" fill="transparent" stroke="#0874fc" stroke-width="5" stroke-dasharray="408.4" stroke-dashoffset="0" id="timer-circle"/>
+  </svg>
+  <div class="timer-text" id="timer-text">0:00</div>
+  <button class="timer-button" id="timer-button"><i class="fas fa-play"></i></button>
+</div>
+
+<script>
+const timerText = document.getElementById("timer-text");
+const timerCircle = document.getElementById("timer-circle");
+const timerButton = document.getElementById("timer-button");
+let countdownInterval;
+
+function resetTimer() {
+  clearInterval(countdownInterval);
+  timerCircle.style.strokeDashoffset = "0";
+  timerText.textContent = "0:00"; // Update for initial state
+  timerButton.innerHTML = '<i class="fas fa-play"></i>'; // Start with play icon
+}
+
+function startTimer() {
+  let timeLeft = 0; // Start counting from 0
+  const totalTime = 600; // Total time for 10 minutes in seconds
+  timerCircle.style.strokeDasharray = "408.4";
+  let dashOffset = 0;
+  const step = 408.4 / totalTime;
+
+  countdownInterval = setInterval(() => {
+    timeLeft++;
+    dashOffset += step;
+    timerCircle.style.strokeDashoffset = dashOffset.toString();
+    // Update to display time in minutes:seconds format
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    timerText.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+    if (timeLeft >= totalTime) {
+      clearInterval(countdownInterval);
+      timerText.textContent = "10:00";
+      timerButton.innerHTML = '<i class="fas fa-redo"></i>'; // Change to reset icon for restart
+    }
+  }, 1000);
+}
+
+timerButton.addEventListener("click", function() {
+  if (timerButton.innerHTML.includes('play')) {
+    startTimer(); // Start the timer
+    timerButton.innerHTML = '<i class="fas fa-pause"></i>'; // Change to pause icon
+  } else {
+    resetTimer(); // Resets and initializes timer for a new start
+  }
+});
+
+resetTimer(); // Initialize timer on load to set everything to start state
+</script>
+
+</body>
+</html>
