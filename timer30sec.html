@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Adaptive Countdown Timer</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+<style>
+body {
+  display: flex;
+  justify-content: left;
+  align-items: left;
+  height: 100vh;
+  background-color: #0;
+  font-family: 'Arial', sans-serif;
+}
+.circle-timer-container {
+  position: relative;
+  width: 150px; /* Size adjusted for better visibility */
+  height: 150px; /* Size adjusted for better visibility */
+}
+.timer-svg {
+  transform: rotate(-90deg);
+  width: 150px;
+  height: 150px;
+}
+.timer-text {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: 40%;
+  left: 0;
+  transform: translateY(-50%);
+  font-size: 1.6em;
+  font-weight: bold;
+  z-index: 10;
+}
+.timer-button {
+  position: absolute;
+  top: 68%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+.timer-button i {
+  color: #0874fc;
+  font-size: 14px;
+}
+</style>
+</head>
+<body>
+
+<div class="circle-timer-container">
+  <svg class="timer-svg">
+    <circle r="65" cx="75" cy="75" fill="transparent" stroke="#eee" stroke-width="5"/>
+    <circle r="65" cx="75" cy="75" fill="transparent" stroke="#0874fc" stroke-width="5" stroke-dasharray="408.4" stroke-dashoffset="408.4" id="timer-circle"/>
+  </svg>
+  <div class="timer-text" id="timer-text">Start</div>
+  <button class="timer-button" id="timer-button"><i class="fas fa-play"></i></button>
+</div>
+
+<script>
+const timerText = document.getElementById("timer-text");
+const timerCircle = document.getElementById("timer-circle");
+const timerButton = document.getElementById("timer-button");
+let prepInterval, mainInterval;
+
+function initializeTimer() {
+  clearInterval(prepInterval);
+  clearInterval(mainInterval);
+  timerCircle.style.strokeDashoffset = "408.4";
+  timerText.textContent = "Start";
+  timerButton.innerHTML = '<i class="fas fa-play"></i>'; // Start with play icon
+}
+
+function startPrepTimer() {
+  let prepTime = 5; // Preparation time in seconds
+  let countdown = prepTime;
+  let totalDashArray = 408.4; // The total length of the circle's stroke
+  let dashOffset = totalDashArray;
+  let step = totalDashArray / prepTime;
+  timerCircle.style.strokeDashoffset = dashOffset.toString();
+  timerButton.innerHTML = '<i class="fas fa-redo"></i>'; // Change to reset icon after start
+
+  prepInterval = setInterval(() => {
+    countdown--;
+    dashOffset -= step;
+    timerCircle.style.strokeDashoffset = dashOffset.toString();
+
+    if (countdown <= 0) {
+      clearInterval(prepInterval);
+      startMainTimer();
+    }
+  }, 1000);
+}
+
+function startMainTimer() {
+  let mainTime = 30; // Main timer in seconds
+  timerText.textContent = mainTime;
+  let totalDashArray = 408.4; // Reset for the main countdown
+  let dashOffset = totalDashArray;
+  timerCircle.style.strokeDashoffset = dashOffset.toString();
+  let step = totalDashArray / mainTime;
+
+  mainInterval = setInterval(() => {
+    mainTime--;
+    timerText.textContent = mainTime;
+    dashOffset -= step;
+    timerCircle.style.strokeDashoffset = dashOffset.toString();
+
+    if (mainTime <= 0) {
+      clearInterval(mainInterval);
+      timerText.textContent = "Done!";
+      // Keep the reset button for restart
+    }
+  }, 1000);
+}
+
+timerButton.addEventListener("click", function() {
+  if (timerButton.innerHTML.includes('play')) {
+    startPrepTimer(); // Start the preparation countdown
+  } else {
+    initializeTimer(); // Resets and initializes timer
+  }
+});
+
+initializeTimer(); // Initialize timer on load
+</script>
+
+</body>
