@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Copy Text to Clipboard</title>
+    <style>
+        #message {
+            visibility: hidden;
+            color: green;
+        }
+        button {
+            background-color: #0074FF; /* Set the background color */
+            color: white;             /* Set the text color to white for better readability */
+            padding: 7px 14px;       /* Increase the padding to make the button bigger */
+            font-size: 1.5em;         /* Increase the font size to make the text larger */
+            border: none;             /* Remove the border */
+            border-radius: 5px;       /* Optional: add rounded corners */
+            cursor: pointer;          /* Change the cursor to a pointer when hovering over the button */
+        }
+        button:hover {
+            background-color: #005ecf; /* Darker shade of blue for hover effect */
+        }
+    </style>
+    <script>
+function copyText() {
+    const textToCopy = `سلام، 
+خوبی؟ خواستم بهت بگم که تصمیم گرفتم یک قدم جدید تو زندگیم بردارم و به سلامتیم بیشتر اهمیت بدم. من یک برنامه ورزشی جدید رو شروع کردم و هر روز ده دقیقه تو خونه و زیر نظر مربی تمرین میکنم! 
+میخوام این کار رو به یک عادت روزانه زندگیم تبدیل کنم و خیلی دوست داشتم تو هم در جریان باشی. می‌دونم تشویق تو می‌تونه بهم انگیزه بده و کمک کنه که به هدفم برسم. 
+خوشحالم که میتونم باهات این حال خوبم رو در میون بذارم.`;
+    const tempElement = document.createElement("textarea");
+    tempElement.value = textToCopy;
+    document.body.appendChild(tempElement);
+    tempElement.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempElement);
+    showMessage();
+}
+        function showMessage() {
+            const messageElement = document.getElementById('message');
+            messageElement.style.visibility = 'visible';
+            setTimeout(function() {
+                messageElement.style.visibility = 'hidden';
+            }, 5000); // Message will be hidden after 5 seconds
+        }
+    </script>
+</head>
+<body>
+    <button onclick="copyText()">کپی متن</button>
+    <div id="message">کپی شد</div>
+</body>
+</html>
